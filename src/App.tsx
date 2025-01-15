@@ -10,11 +10,13 @@ import CategoryDetailPage from './pages/Categories/CategoryDetailPage';
 import AboutPage from './pages/About';
 import LoginPage from './pages/Auth/LoginPage';
 import SignupPage from './pages/Auth/SignupPage';
+import Favicon from './assets/favicons/Favicon';
 
 function App() {
   return (
     <ThemeProvider>
       <Router>
+        <Favicon />
         <div className="flex flex-col min-h-screen">
           <Navbar />
           <main className="flex-grow">
