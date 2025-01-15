@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: #FF6F61;
+    --color-primary-dark: #b34d44;
+    --color-primary-light: #ffdbd8;
+    --color-primary-medium: #ffb6b0;
+    --color-white: #ffffff;
+    
+    /* Light theme defaults */
+    --color-background: var(--color-white);
+    --color-surface: #F8F8F8;
+    --color-text: #2D3436;
+    --color-text-secondary: #636e72;
+    --color-border: #dfe6e9;
+  }
+
+  [data-theme='dark'] {
+    --color-background: #1a1a1a;
+    --color-surface: #2d2d2d;
+    --color-text: #F8F8F8;
+    --color-text-secondary: #a0a0a0;
+    --color-border: #404040;
+  }
+
+  body {
+    @apply bg-background text-text transition-colors duration-200;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-primary text-white rounded-lg hover:opacity-90 transition-all;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-primary-dark text-white rounded-lg hover:opacity-90 transition-all;
+  }
+
+  .btn-outline {
+    @apply px-4 py-2 border-2 border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition-all;
+  }
+
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .card {
+    @apply bg-surface rounded-lg border border-border p-4 shadow-sm;
+  }
+}
