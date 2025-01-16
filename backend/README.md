@@ -1,275 +1,321 @@
-# FlavorfulHub
+# FlavorfulHub Backend
 
-A modern recipe sharing platform built with React, TypeScript, and Framer Motion.
+A robust backend system for a recipe management platform with admin dashboard capabilities.
 
 ## Features
 
-- 🍳 Browse recipes by categories
-- 🔍 Advanced search with history and suggestions
-- 📱 Responsive design for all devices
-- ⚡ Smooth animations and transitions
-- 🎨 Modern and clean UI
-- 🎯 Filter recipes by time, difficulty, and servings
-- 📊 Dynamic recipe statistics
-- 👤 Author profiles for each recipe
+- User Authentication & Authorization
+- Admin Dashboard
+- Recipe Management
+- Category Management
+- Image Upload System
+- Filtering and Sorting Capabilities
 
-## Tech Stack
+## API Endpoints
 
-- React
-- TypeScript
-- Tailwind CSS
-- Framer Motion
-- React Router
-- Lucide Icons
+### Authentication
 
-## Getting Started
+```
+POST /api/auth/register
+- Register a new user
+- Body: { username, email, password, user_type }
+- Response: { token, user }
+
+POST /api/auth/login
+- Login user
+- Body: { email, password }
+- Response: { token, user }
+```
+
+### Admin Dashboard
+
+```
+GET /api/admin/dashboard
+- Get dashboard statistics
+- Protected: Admin only
+- Response: { stats: { totalUsers, totalRecipes, totalCategories } }
+```
+
+### User Management
+
+```
+GET /api/admin/users
+- Get all users
+- Protected: Admin only
+- Response: [{ id, username, email, user_type, created_at }]
+
+PUT /api/admin/users/:id
+- Update user type
+- Protected: Admin only
+- Body: { user_type }
+- Response: { message: "User updated successfully" }
+
+DELETE /api/admin/users/:id
+- Delete user
+- Protected: Admin only
+- Response: { message: "User deleted successfully" }
+```
+
+### Recipe Management
+
+```
+GET /api/admin/recipes
+- Get all recipes
+- Protected: Admin only
+- Response: [{ id, title, description, image_url, category, prep_time, servings, difficulty_level, rating, created_at }]
+
+POST /api/admin/recipes
+- Create new recipe
+- Protected: Admin only
+- Body: { title, description, category_id, image_url?, prep_time, servings, difficulty_level }
+- Response: { id, title, ... }
+
+GET /api/admin/recipes/:id
+- Get single recipe
+- Protected: Admin only
+- Response: { id, title, ... }
+
+PUT /api/admin/recipes/:id
+- Update recipe
+- Protected: Admin only
+- Body: { title?, description?, category_id?, image_url?, prep_time?, servings?, difficulty_level? }
+- Response: { id, title, ... }
+
+DELETE /api/admin/recipes/:id
+- Delete recipe
+- Protected: Admin only
+- Response: { message: "Recipe deleted successfully" }
+
+POST /api/admin/recipes/upload
+- Upload recipe image
+- Protected: Admin only
+- Body: FormData with 'image' file
+- Response: { imageUrl: string }
+```
+
+### Category Management
+
+```
+GET /api/admin/categories
+- Get all categories
+- Protected: Admin only
+- Response: [{ id, name, description, image_url, recipes }]
+
+POST /api/admin/categories
+- Create new category
+- Protected: Admin only
+- Body: { name, description, image_url? }
+- Response: { id, name, ... }
+
+GET /api/admin/categories/:id
+- Get single category
+- Protected: Admin only
+- Response: { id, name, ... }
+
+PUT /api/admin/categories/:id
+- Update category
+- Protected: Admin only
+- Body: { name?, description?, image_url? }
+- Response: { id, name, ... }
+
+DELETE /api/admin/categories/:id
+- Delete category
+- Protected: Admin only
+- Response: { message: "Category deleted successfully" }
+```
+
+## Admin Dashboard Features
+
+### User Management
+- View all users
+- Change user types (admin/default_user)
+- Delete users
+- Create new users
+- Prevent deletion of last admin
+
+### Recipe Management
+- Create, read, update, and delete recipes
+- Filter recipes by:
+  - Category
+  - Difficulty level
+  - Search term (title/description)
+- Sort recipes by:
+  - Newest/Oldest
+  - Title (A-Z/Z-A)
+  - Rating
+- Image upload and preview
+- Associate recipes with categories
+
+### Category Management
+- Create, read, update, and delete categories
+- Filter categories by:
+  - Search term (name/description)
+  - Show/hide empty categories
+- Sort categories by:
+  - Name (A-Z/Z-A)
+  - Recipe count (High-Low/Low-High)
+- Image upload and preview
+- Track number of recipes per category
+
+## Data Models
+
+### User
+```typescript
+{
+  id: number
+  username: string
+  email: string
+  password: string (hashed)
+  user_type: "admin" | "default_user"
+  created_at: Date
+}
+```
+
+### Recipe
+```typescript
+{
+  id: number
+  title: string
+  description: string
+  image_url?: string
+  category_id: number
+  prep_time: string
+  servings: number
+  difficulty_level: "Easy" | "Medium" | "Hard"
+  rating: number
+  created_at: Date
+  author_id: number
+}
+```
+
+### Category
+```typescript
+{
+  id: number
+  name: string
+  description?: string
+  image_url?: string
+  recipes: Recipe[]
+}
+```
+
+## Security Features
+
+- JWT Authentication
+- Admin-only route protection
+- Password hashing
+- Input validation
+- File upload restrictions
+- Error handling
+- CORS configuration
+
+## Frontend Features
+
+- Responsive admin dashboard
+- Real-time filtering and sorting
+- Image preview before upload
+- Form validation
+- Error handling and user feedback
+- Modal dialogs for edit operations
+- Confirmation dialogs for delete operations
+- Loading states
+- Automatic token management
+- Session handling
+
+## Setup Instructions
 
 1. Clone the repository
-```bash
-git clone https://github.com/yourusername/FlavorfulHub.git
+2. Install dependencies: `npm install`
+3. Set up environment variables in `.env`
+4. Initialize database: `npm run db:init`
+5. Start development server: `npm run dev`
+
+## Environment Variables
+
+```
+PORT=5000
+NODE_ENV=development
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=your_username
+DB_PASSWORD=your_password
+DB_NAME=flavorfulhub
+JWT_SECRET=your_jwt_secret
 ```
 
-2. Install dependencies
-```bash
-cd FlavorfulHub
-npm install
+## Scripts
+
+```json
+{
+  "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
+  "build": "tsc",
+  "start": "node dist/app.js",
+  "db:init": "ts-node src/config/database.ts"
+}
 ```
 
-3. Start the development server
-```bash
-npm run dev
-```
+## Dependencies
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+- Express.js
+- TypeORM
+- PostgreSQL
+- JSON Web Token
+- Multer
+- Bcrypt
+- CORS
+- TypeScript
+
+## Development Dependencies
+
+- ts-node-dev
+- TypeScript
+- @types/node
+- @types/express
+- other type definitions
 
 ## Project Structure
 
 ```
 src/
-├── components/
-│   ├── Categories/
-│   ├── Recipes/
-│   └── UI/
-├── pages/
-│   ├── Categories/
-│   ├── Recipes/
-│   └── Auth/
+├── config/
+│   ├── database.ts
+│   └── environment.ts
+├── controllers/
+│   ├── AdminController.ts
+│   ├── AuthController.ts
+│   └── ...
+├── middleware/
+│   ├── adminAuth.ts
+│   ├── auth.ts
+│   └── ...
+├── models/
+│   ├── User.ts
+│   ├── Recipe.ts
+│   ├── Category.ts
+│   └── ...
+├── routes/
+│   ├── admin.ts
+│   ├── auth.ts
+│   └── ...
 ├── utils/
-└── contexts/
+│   ├── seedCategories.ts
+│   ├── seedRecipes.ts
+│   └── ...
+└── app.ts
 ```
 
----
-## Backend Architecture
+## Contributing
 
-### Tech Stack
-- Node.js with Express.js
-- TypeScript
-- PostgreSQL (as specified in requirements)
-- Prisma (ORM)
-- JWT for authentication
-- Multer for file uploads
-- Socket.io for real-time features
-- Jest for testing
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a new Pull Request
 
-### Project Structure
-```
-backend/
-├── src/
-│   ├── config/
-│   │   ├── database.ts
-│   │   └── environment.ts
-│   ├── controllers/
-│   │   ├── AuthController.ts
-│   │   ├── RecipeController.ts
-│   │   ├── CategoryController.ts
-│   │   ├── CommentController.ts
-│   │   └── UserController.ts
-│   ├── middleware/
-│   │   ├── auth.ts
-│   │   ├── errorHandler.ts
-│   │   └── validation.ts
-│   ├── models/
-│   │   └── prisma/
-│   │       └── schema.prisma
-│   ├── routes/
-│   │   ├── auth.ts
-│   │   ├── recipes.ts
-│   │   ├── categories.ts
-│   │   ├── comments.ts
-│   │   └── users.ts
-│   ├── services/
-│   │   ├── AuthService.ts
-│   │   ├── RecipeService.ts
-│   │   └── StorageService.ts
-│   ├── utils/
-│   │   ├── logger.ts
-│   │   └── validators.ts
-│   ├── types/
-│   │   └── index.ts
-│   └── app.ts
-├── tests/
-├── .env
-├── package.json
-└── tsconfig.json
-```
+## License
 
-### Main Features Implementation
-1. Authentication System
-   - JWT-based auth
-   - Social login integration
-   - Password reset flow
+This project is licensed under the MIT License.
 
-2. Recipe Management
-   - CRUD operations
-   - Image upload & processing
-   - Categories & tags
-   - Search & filtering
+## Author
 
-3. User Interactions
-   - Comments & ratings
-   - Favorites system
-   - User profiles
-   - Following system
-
-4. API Endpoints
-   - RESTful API design
-   - Rate limiting
-   - Input validation
-   - Error handling
-
-5. Database Schema (PostgreSQL)
-```sql
--- Key tables structure
-CREATE TABLE users (
-    user_id SERIAL PRIMARY KEY,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    profile_image VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE recipes (
-    recipe_id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    author_id INTEGER REFERENCES users(user_id),
-    category_id INTEGER REFERENCES categories(category_id),
-    cooking_time INTEGER,
-    difficulty_level VARCHAR(20),
-    servings INTEGER,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE categories (
-    category_id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    description TEXT
-);
-
-CREATE TABLE comments (
-    comment_id SERIAL PRIMARY KEY,
-    recipe_id INTEGER REFERENCES recipes(recipe_id),
-    user_id INTEGER REFERENCES users(user_id),
-    content TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE ratings (
-    rating_id SERIAL PRIMARY KEY,
-    recipe_id INTEGER REFERENCES recipes(recipe_id),
-    user_id INTEGER REFERENCES users(user_id),
-    score INTEGER CHECK (score >= 1 AND score <= 5),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-Would you like me to start implementing any specific part of this backend architecture? We can begin with:
-1. Setting up the basic Express.js server with TypeScript
-2. Implementing the database schema with Prisma
-3. Creating the authentication system
-4. Building the recipe management API
-
-Let me know which part you'd like to tackle first!
-
-
----
-
-
-
-
-
-
-
-# FlavorfulHub (Türkçe)
-
-React, TypeScript ve Framer Motion ile geliştirilmiş modern bir yemek tarifi paylaşım platformu.
-
-## Özellikler
-
-- 🍳 Kategorilere göre tarifleri keşfedin
-- 🔍 Arama geçmişi ve önerilerle gelişmiş arama
-- 📱 Tüm cihazlar için uyumlu tasarım
-- ⚡ Akıcı animasyonlar ve geçişler
-- 🎨 Modern ve sade arayüz
-- 🎯 Süre, zorluk ve porsiyon bazlı tarif filtreleme
-- 📊 Dinamik tarif istatistikleri
-- 👤 Her tarif için yazar profilleri
-
-## Teknoloji Altyapısı
-
-- React
-- TypeScript
-- Tailwind CSS
-- Framer Motion
-- React Router
-- Lucide Icons
-
-## Başlangıç
-
-1. Projeyi klonlayın
-```bash
-git clone https://github.com/yourusername/FlavorfulHub.git
-```
-
-2. Bağımlılıkları yükleyin
-```bash
-cd FlavorfulHub
-npm install
-```
-
-3. Geliştirme sunucusunu başlatın
-```bash
-npm run dev
-```
-
-4. Tarayıcınızda [http://localhost:3000](http://localhost:3000) adresini açın
-
-## Proje Yapısı
-
-```
-src/
-├── components/
-│   ├── Categories/
-│   ├── Recipes/
-│   └── UI/
-├── pages/
-│   ├── Categories/
-│   ├── Recipes/
-│   └── Auth/
-├── utils/
-└── contexts/
-```
-
-## ToDo
-- [ ] Add user authentication
-- [ ] Implement recipe creation
-- [ ] Add comments and ratings
-- [ ] Create user profiles
-- [ ] Add recipe sharing
-- [ ] Implement favorites system
-- [ ] Add recipe printing
-- [ ] Create mobile app
-
----
-Made with ❤️ by [wezirim.com](https://wezirim.com) 
+[wezirim.com](https://wezirim.com) 
