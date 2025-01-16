@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlavorfulHub API Tester</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">FlavorfulHub API Tester</h1>
+        
+        <!-- Health Check -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-4">Health Check</h2>
+            <button onclick="checkHealth()" class="bg-green-500 text-white px-4 py-2 rounded">
+                Check API Health
+            </button>
+            <pre id="healthResult" class="mt-4 bg-gray-100 p-4 rounded"></pre>
+        </div>
+
+        <!-- User Operations -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-4">User Operations</h2>
+            <div class="space-y-4">
+                <div>
+                    <button onclick="getUsers()" class="bg-blue-500 text-white px-4 py-2 rounded">
+                        Get All Users
+                    </button>
+                </div>
+                <div>
+                    <input type="text" id="username" placeholder="Username" class="border p-2 rounded mr-2">
+                    <input type="email" id="email" placeholder="Email" class="border p-2 rounded mr-2">
+                    <input type="password" id="password" placeholder="Password" class="border p-2 rounded mr-2">
+                    <button onclick="createUser()" class="bg-purple-500 text-white px-4 py-2 rounded">
+                        Create User
+                    </button>
+                </div>
+            </div>
+            <pre id="userResult" class="mt-4 bg-gray-100 p-4 rounded"></pre>
+        </div>
+
+        <!-- Authentication -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-4">Authentication</h2>
+            
+            <!-- Registration -->
+            <div class="mb-6">
+                <h3 class="text-lg font-medium mb-2">Register</h3>
+                <div class="space-y-2">
+                    <input type="text" id="regUsername" placeholder="Username" class="border p-2 rounded mr-2">
+                    <input type="email" id="regEmail" placeholder="Email" class="border p-2 rounded mr-2">
+                    <input type="password" id="regPassword" placeholder="Password" class="border p-2 rounded mr-2">
+                    <button onclick="register()" class="bg-green-500 text-white px-4 py-2 rounded">
+                        Register
+                    </button>
+                </div>
+            </div>
+
+            <!-- Login -->
+            <div>
+                <h3 class="text-lg font-medium mb-2">Login</h3>
+                <div class="space-y-2">
+                    <input type="email" id="loginEmail" placeholder="Email" class="border p-2 rounded mr-2">
+                    <input type="password" id="loginPassword" placeholder="Password" class="border p-2 rounded mr-2">
+                    <button onclick="login()" class="bg-blue-500 text-white px-4 py-2 rounded">
+                        Login
+                    </button>
+                </div>
+            </div>
+
+            <pre id="authResult" class="mt-4 bg-gray-100 p-4 rounded"></pre>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+
+        async function checkHealth() {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                document.getElementById('healthResult').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('healthResult').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function getUsers() {
+            try {
+                const response = await fetch(`${API_URL}/users`);
+                const data = await response.json();
+                document.getElementById('userResult').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('userResult').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function createUser() {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${API_URL}/users`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, email, password }),
+                });
+                const data = await response.json();
+                document.getElementById('userResult').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('userResult').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, email, password }),
+                });
+                const data = await response.json();
+                document.getElementById('authResult').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('authResult').textContent = `Error: ${error.message}`;
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+                const data = await response.json();
+                document.getElementById('authResult').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('authResult').textContent = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html> 

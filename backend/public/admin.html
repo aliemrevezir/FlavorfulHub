@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlavorfulHub Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        
+
+        <!-- Main Content -->
+        <div class="container mx-auto p-6">
+            <!-- Login Section -->
+            <div id="loginSection" class="bg-white p-6 rounded-lg shadow-md mb-6">
+                <h2 class="text-xl font-semibold mb-4">Admin Login</h2>
+                <div class="space-y-4">
+                    <div>
+                        <input type="email" id="loginEmail" placeholder="Email" class="border p-2 rounded w-full">
+                    </div>
+                    <div>
+                        <input type="password" id="loginPassword" placeholder="Password" class="border p-2 rounded w-full">
+                    </div>
+                    <button onclick="login()" class="bg-blue-500 text-white px-4 py-2 rounded w-full">
+                        Login
+                    </button>
+                </div>
+            </div>
+
+            <!-- Admin Registration (Only shown to first user) -->
+            <div id="registerSection" class="bg-white p-6 rounded-lg shadow-md mb-6 hidden">
+                <h2 class="text-xl font-semibold mb-4">Create Admin Account</h2>
+                <div class="space-y-4">
+                    <div>
+                        <input type="text" id="regUsername" placeholder="Username" class="border p-2 rounded w-full">
+                    </div>
+                    <div>
+                        <input type="email" id="regEmail" placeholder="Email" class="border p-2 rounded w-full">
+                    </div>
+                    <div>
+                        <input type="password" id="regPassword" placeholder="Password" class="border p-2 rounded w-full">
+                    </div>
+                    <button onclick="registerAdmin()" class="bg-green-500 text-white px-4 py-2 rounded w-full">
+                        Create Admin Account
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Content (Hidden until logged in) -->
+            <div id="dashboardContent" class="hidden">
+                <!-- Navigation Bar -->
+                <nav class="bg-gray-800 text-white p-4 mb-6 sticky top-0 z-50">
+                    <div class="container mx-auto flex justify-between items-center">
+                        <div class="flex items-center space-x-8">
+                            <a href="#" class="text-xl font-bold">FlavorfulHub</a>
+                            <div class="hidden md:flex space-x-4">
+                                <a href="#dashboard" onclick="showSection('dashboard')" class="hover:text-gray-300 transition-colors">Dashboard</a>
+                                <a href="#users" onclick="showSection('users')" class="hover:text-gray-300 transition-colors">Users</a>
+                                <a href="#recipes" onclick="showSection('recipes')" class="hover:text-gray-300 transition-colors">Recipes</a>
+                                <a href="#categories" onclick="showSection('categories')" class="hover:text-gray-300 transition-colors">Categories</a>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <button 
+                                onclick="logout()" 
+                                class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+
+                <!-- Section: Dashboard -->
+                <div id="dashboardSection" class="section">
+                    <!-- Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-lg font-medium mb-2">Total Users</h3>
+                            <p id="totalUsers" class="text-3xl font-bold text-blue-600">-</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-lg font-medium mb-2">Total Recipes</h3>
+                            <p id="totalRecipes" class="text-3xl font-bold text-green-600">-</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-lg font-medium mb-2">Total Categories</h3>
+                            <p id="totalCategories" class="text-3xl font-bold text-purple-600">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Users -->
+                <div id="usersSection" class="section hidden">
+                    <!-- Add New User Section -->
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h2 class="text-xl font-semibold mb-4">Add New User</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                                <input type="text" id="newUserUsername" class="w-full border p-2 rounded" placeholder="Username">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" id="newUserEmail" class="w-full border p-2 rounded" placeholder="Email">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                                <input type="password" id="newUserPassword" class="w-full border p-2 rounded" placeholder="Password">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">User Type</label>
+                                <select id="newUserType" class="w-full border p-2 rounded">
+                                    <option value="default_user">Default User</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button 
+                            onclick="addNewUser()" 
+                            class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
+                        >
+                            Add User
+                        </button>
+                    </div>
+
+                    <!-- Users Management -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold">Users Management</h2>
+                            <button 
+                                onclick="loadUsers()" 
+                                class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors"
+                            >
+                                Refresh Users
+                            </button>
+                        </div>
+                        <div id="usersList" class="space-y-4">
+                            <!-- Users will be loaded here -->
+                            <div class="text-center text-gray-500">Loading users...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Recipes -->
+                <div id="recipesSection" class="section hidden">
+                    <!-- Recipe Management -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold">Recipe Management</h2>
+                            <button 
+                                onclick="loadRecipes()" 
+                                class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors"
+                            >
+                                Refresh Recipes
+                            </button>
+                        </div>
+                        
+                        <!-- Add Recipe Form -->
+                        <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                            <h3 class="text-lg font-medium mb-3">Add New Recipe</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                                    <input type="text" id="recipeTitle" class="w-full border p-2 rounded" placeholder="Recipe title">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                    <select id="recipeCategory" class="w-full border p-2 rounded">
+                                        <!-- Categories will be loaded dynamically -->
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                    <textarea id="recipeDescription" class="w-full border p-2 rounded h-20" placeholder="Recipe description"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Image</label>
+                                    <div class="space-y-2">
+                                        <input 
+                                            type="file" 
+                                            id="recipeImage" 
+                                            accept="image/*"
+                                            class="w-full border p-2 rounded"
+                                            onchange="handleImageUpload(this, 'recipeImagePreview')"
+                                        >
+                                        <div 
+                                            id="recipeImagePreview" 
+                                            class="w-full h-40 bg-gray-100 rounded flex items-center justify-center overflow-hidden"
+                                        >
+                                            <p class="text-gray-500">Image preview will appear here</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Prep Time</label>
+                                    <input type="text" id="recipePrepTime" class="w-full border p-2 rounded" placeholder="e.g., 30 mins">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Servings</label>
+                                    <input type="number" id="recipeServings" class="w-full border p-2 rounded" min="1" value="1">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Difficulty Level</label>
+                                    <select id="recipeDifficulty" class="w-full border p-2 rounded">
+                                        <option value="Easy">Easy</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="Hard">Hard</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button 
+                                onclick="createRecipe()" 
+                                class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
+                            >
+                                Add Recipe
+                            </button>
+                        </div>
+
+                        <!-- Recipes List -->
+                        <div id="recipesList" class="space-y-4">
+                            <div class="text-center text-gray-500">Loading recipes...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Categories -->
+                <div id="categoriesSection" class="section hidden">
+                    <!-- Categories Management -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold">Categories Management</h2>
+                            <button 
+                                onclick="loadCategories()" 
+                                class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors"
+                            >
+                                Refresh Categories
+                            </button>
+                        </div>
+                        
+                        <!-- Add Category Form -->
+                        <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                            <h3 class="text-lg font-medium mb-3">Add New Category</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                    <input type="text" id="categoryName" class="w-full border p-2 rounded" placeholder="Category name">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                    <textarea id="categoryDescription" class="w-full border p-2 rounded h-20" placeholder="Category description"></textarea>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Image</label>
+                                    <div class="space-y-2">
+                                        <input 
+                                            type="file" 
+                                            id="categoryImage" 
+                                            accept="image/*"
+                                            class="w-full border p-2 rounded"
+                                            onchange="handleImageUpload(this, 'categoryImagePreview')"
+                                        >
+                                        <div 
+                                            id="categoryImagePreview" 
+                                            class="w-full h-40 bg-gray-100 rounded flex items-center justify-center overflow-hidden"
+                                        >
+                                            <p class="text-gray-500">Image preview will appear here</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button 
+                                onclick="createCategory()" 
+                                class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
+                            >
+                                Add Category
+                            </button>
+                        </div>
+
+                        <!-- Categories List -->
+                        <div id="categoriesList" class="space-y-4">
+                            <div class="text-center text-gray-500">Loading categories...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Category Modal -->
+    <div id="editCategoryModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">Edit Category</h3>
+                <button onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <input type="hidden" id="editCategoryId">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                    <input 
+                        type="text" 
+                        id="editCategoryName" 
+                        class="w-full border p-2 rounded" 
+                        placeholder="Category name"
+                        onkeyup="validateCategoryName(this)"
+                    >
+                    <p id="editCategoryNameError" class="text-red-500 text-sm mt-1 hidden"></p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea 
+                        id="editCategoryDescription" 
+                        class="w-full border p-2 rounded h-24 resize-none"
+                        placeholder="Enter category description"
+                    ></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Image</label>
+                    <div class="space-y-2">
+                        <input 
+                            type="file" 
+                            id="editCategoryImage" 
+                            accept="image/*"
+                            class="w-full border p-2 rounded"
+                            onchange="handleImageUpload(this, 'editCategoryImagePreview')"
+                        >
+                        <div 
+                            id="editCategoryImagePreview" 
+                            class="w-full h-40 bg-gray-100 rounded flex items-center justify-center overflow-hidden"
+                        >
+                            <p class="text-gray-500">Image preview will appear here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-3">
+                <button 
+                    onclick="closeEditModal()"
+                    class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors"
+                >
+                    Cancel
+                </button>
+                <button 
+                    onclick="updateCategory()"
+                    class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+                >
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Recipe Modal -->
+    <div id="editRecipeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">Edit Recipe</h3>
+                <button onclick="closeEditRecipeModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <input type="hidden" id="editRecipeId">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                    <input type="text" id="editRecipeTitle" class="w-full border p-2 rounded" placeholder="Recipe title">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <select id="editRecipeCategory" class="w-full border p-2 rounded">
+                        <!-- Categories will be loaded dynamically -->
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea id="editRecipeDescription" class="w-full border p-2 rounded h-32" placeholder="Recipe description"></textarea>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Image</label>
+                    <div class="space-y-2">
+                        <input 
+                            type="file" 
+                            id="editRecipeImage" 
+                            accept="image/*"
+                            class="w-full border p-2 rounded"
+                            onchange="handleImageUpload(this, 'editRecipeImagePreview')"
+                        >
+                        <div 
+                            id="editRecipeImagePreview" 
+                            class="w-full h-40 bg-gray-100 rounded flex items-center justify-center overflow-hidden"
+                        >
+                            <p class="text-gray-500">Image preview will appear here</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Prep Time</label>
+                    <input type="text" id="editRecipePrepTime" class="w-full border p-2 rounded" placeholder="e.g., 30 mins">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Servings</label>
+                    <input type="number" id="editRecipeServings" class="w-full border p-2 rounded" min="1">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Difficulty Level</label>
+                    <select id="editRecipeDifficulty" class="w-full border p-2 rounded">
+                        <option value="Easy">Easy</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hard">Hard</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-3">
+                <button onclick="closeEditRecipeModal()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">
+                    Cancel
+                </button>
+                <button onclick="updateRecipe()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let authToken = localStorage.getItem('adminToken');
+
+        // Check if admin exists
+        async function checkFirstAdmin() {
+            try {
+                const response = await fetch(`${API_URL}/users`);
+                const users = await response.json();
+                if (users.length === 0) {
+                    document.getElementById('registerSection').classList.remove('hidden');
+                    document.getElementById('loginSection').classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Error checking admin:', error);
+            }
+        }
+
+        // Register Admin
+        async function registerAdmin() {
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        username, 
+                        email, 
+                        password,
+                        user_type: 'admin'
+                    }),
+                });
+                const data = await response.json();
+                if (data.token) {
+                    localStorage.setItem('adminToken', data.token);
+                    authToken = data.token;
+                    showDashboard();
+                }
+            } catch (error) {
+                console.error('Error registering:', error);
+            }
+        }
+
+        // Login
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+                const data = await response.json();
+                if (data.token && data.user.user_type === 'admin') {
+                    localStorage.setItem('adminToken', data.token);
+                    authToken = data.token;
+                    showDashboard();
+                } else {
+                    alert('Access denied. Admin privileges required.');
+                }
+            } catch (error) {
+                console.error('Error logging in:', error);
+            }
+        }
+
+        // Show Dashboard
+        async function showDashboard() {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('registerSection').classList.add('hidden');
+            document.getElementById('dashboardContent').classList.remove('hidden');
+            showSection('dashboard');
+        }
+
+        // Load Dashboard Data
+        async function loadDashboardData() {
+            try {
+                const response = await fetch(`${API_URL}/admin/dashboard`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                const data = await response.json();
+                
+                // Update stats
+                document.getElementById('totalUsers').textContent = data.stats.totalUsers;
+                document.getElementById('totalRecipes').textContent = data.stats.totalRecipes;
+                document.getElementById('totalCategories').textContent = data.stats.totalCategories;
+
+                // Load users and categories
+                await Promise.all([
+                    loadUsers(),
+                    loadCategories()
+                ]);
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Initialize
+        if (authToken) {
+            showDashboard();
+        } else {
+            checkFirstAdmin();
+        }
+
+        // Load Users
+        async function loadUsers() {
+            try {
+                const response = await fetch(`${API_URL}/admin/users`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to load users');
+                }
+
+                const users = await response.json();
+                
+                const usersList = document.getElementById('usersList');
+                usersList.innerHTML = users.map(user => `
+                    <div class="border p-4 rounded-lg mb-4 ${user.user_type === 'admin' ? 'bg-red-50' : 'bg-white'}">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-medium">${user.username}</h3>
+                                <p class="text-sm text-gray-600">${user.email}</p>
+                                <p class="text-sm ${user.user_type === 'admin' ? 'text-red-600 font-semibold' : 'text-green-600'}">
+                                    ${user.user_type}
+                                </p>
+                                <p class="text-xs text-gray-500">Created: ${new Date(user.created_at).toLocaleDateString()}</p>
+                            </div>
+                            <div class="space-y-2">
+                                <div>
+                                    <select 
+                                        id="userType_${user.id}" 
+                                        class="border p-2 rounded text-sm"
+                                        onchange="updateUserType(${user.id}, this.value)"
+                                    >
+                                        <option value="default_user" ${user.user_type === 'default_user' ? 'selected' : ''}>
+                                            Default User
+                                        </option>
+                                        <option value="admin" ${user.user_type === 'admin' ? 'selected' : ''}>
+                                            Admin
+                                        </option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <button 
+                                        onclick="deleteUser(${user.id})" 
+                                        class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-colors"
+                                    >
+                                        Delete User
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading users:', error);
+                document.getElementById('usersList').innerHTML = `
+                    <div class="text-center text-red-500 p-4">
+                        Error loading users: ${error.message}
+                        <button 
+                            onclick="loadUsers()" 
+                            class="block mx-auto mt-2 bg-blue-500 text-white px-4 py-2 rounded"
+                        >
+                            Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        async function updateUserType(userId, newType) {
+            if (!confirm(`Are you sure you want to change this user's type to ${newType}?`)) return;
+
+            try {
+                const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user_type: newType })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    await loadUsers(); // Reload the users list
+                    alert('User type updated successfully');
+                } else {
+                    alert(data.error || 'Failed to update user type');
+                }
+            } catch (error) {
+                console.error('Error updating user type:', error);
+                alert('Error updating user type. Please check console for details.');
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/admin/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    await loadUsers(); // Reload the users list
+                    await loadDashboardData(); // Refresh dashboard stats
+                    alert('User deleted successfully');
+                } else {
+                    alert(data.error || 'Failed to delete user');
+                }
+            } catch (error) {
+                console.error('Error deleting user:', error);
+                alert('Error deleting user. Please check console for details.');
+            }
+        }
+
+        // Add this function to load categories
+        async function loadCategories() {
+            try {
+                const response = await fetch(`${API_URL}/admin/categories`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to load categories');
+                }
+
+                const categories = await response.json();
+                
+                const categoriesList = document.getElementById('categoriesList');
+                categoriesList.innerHTML = categories.map(category => `
+                    <div class="border p-4 rounded-lg mb-4 bg-white">
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-start space-x-4">
+                                
+                                <div>
+                                    <h3 class="font-medium text-lg capitalize">${category.name}</h3>
+                                    <p class="text-sm text-gray-600">${category.description || 'No description'}</p>
+                                    <p class="text-sm text-blue-600 mt-1">
+                                        ${category.recipes ? category.recipes.length : 0} recipes
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <button 
+                                    onclick="editCategory(${category.id})"
+                                    class="block w-full bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors"
+                                >
+                                    Edit
+                                </button>
+                                <button 
+                                    onclick="deleteCategory(${category.id})"
+                                    class="block w-full bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-colors"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                document.getElementById('categoriesList').innerHTML = `
+                    <div class="text-center text-red-500 p-4">
+                        Error loading categories: ${error.message}
+                        <button 
+                            onclick="loadCategories()" 
+                            class="block mx-auto mt-2 bg-blue-500 text-white px-4 py-2 rounded"
+                        >
+                            Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        async function createCategory() {
+            const name = document.getElementById('categoryName').value.trim().toLowerCase();
+            const description = document.getElementById('categoryDescription').value;
+            const imageFile = document.getElementById('categoryImage').files[0];
+
+            if (!name) {
+                alert('Category name is required');
+                return;
+            }
+
+            // Basic validation for category name
+            if (name.length < 2) {
+                alert('Category name must be at least 2 characters long');
+                return;
+            }
+
+            if (!/^[a-z0-9\s-]+$/.test(name)) {
+                alert('Category name can only contain letters, numbers, spaces, and hyphens');
+                return;
+            }
+
+            try {
+                // Upload image if selected
+                let image_url = null;
+                if (imageFile) {
+                    image_url = await uploadImage(imageFile);
+                }
+
+                const response = await fetch(`${API_URL}/admin/categories`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        description,
+                        image_url
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to create category');
+                }
+
+                // Clear form
+                document.getElementById('categoryName').value = '';
+                document.getElementById('categoryDescription').value = '';
+                document.getElementById('categoryImage').value = '';
+                document.getElementById('categoryImagePreview').innerHTML = '<p class="text-gray-500">Image preview will appear here</p>';
+
+                // Reload categories
+                await loadCategories();
+                await loadDashboardData();
+                alert('Category created successfully');
+            } catch (error) {
+                console.error('Error creating category:', error);
+                alert(error.message);
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('editCategoryModal').classList.add('hidden');
+            document.getElementById('editCategoryId').value = '';
+            document.getElementById('editCategoryName').value = '';
+            document.getElementById('editCategoryDescription').value = '';
+            document.getElementById('editCategoryImage').value = '';
+            document.getElementById('editCategoryImagePreview').innerHTML = '<p class="text-gray-500">Image preview will appear here</p>';
+            document.getElementById('editCategoryNameError').classList.add('hidden');
+        }
+
+        function validateCategoryName(input) {
+            const name = input.value.trim().toLowerCase();
+            const errorElement = document.getElementById(input.id + 'Error');
+            
+            if (name.length === 0) {
+                errorElement.textContent = 'Category name is required';
+                errorElement.classList.remove('hidden');
+                return false;
+            }
+            
+            if (name.length < 2) {
+                errorElement.textContent = 'Category name must be at least 2 characters long';
+                errorElement.classList.remove('hidden');
+                return false;
+            }
+            
+            if (!/^[a-z0-9\s-]+$/.test(name)) {
+                errorElement.textContent = 'Category name can only contain letters, numbers, spaces, and hyphens';
+                errorElement.classList.remove('hidden');
+                return false;
+            }
+            
+            errorElement.classList.add('hidden');
+            return true;
+        }
+
+        function previewImage(url, previewId) {
+            const previewElement = document.getElementById(previewId);
+            if (!url) {
+                previewElement.innerHTML = '<p class="text-gray-500">Image preview will appear here</p>';
+                return;
+            }
+
+            const img = new Image();
+            img.onload = function() {
+                previewElement.innerHTML = '';
+                img.className = 'h-full w-full object-contain';
+                previewElement.appendChild(img);
+            };
+            img.onerror = function() {
+                previewElement.innerHTML = '<p class="text-red-500">Invalid image URL</p>';
+            };
+            img.src = url;
+        }
+
+        async function editCategory(categoryId) {
+            try {
+                console.log('Fetching category details for ID:', categoryId);
+                
+                const response = await fetch(`${API_URL}/admin/categories/${categoryId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch category details. Status: ${response.status}`);
+                }
+
+                const category = await response.json();
+                console.log('Fetched category:', category);
+
+                if (!category || !category.id) {
+                    throw new Error('Invalid category data received');
+                }
+
+                // Show edit modal and populate fields
+                document.getElementById('editCategoryModal').classList.remove('hidden');
+                document.getElementById('editCategoryId').value = category.id;
+                document.getElementById('editCategoryName').value = category.name || '';
+                document.getElementById('editCategoryDescription').value = category.description || '';
+
+                // Set image preview if exists
+                const previewElement = document.getElementById('editCategoryImagePreview');
+                if (category.image_url) {
+                    previewElement.innerHTML = `
+                        <img 
+                            src="${category.image_url}" 
+                            class="w-full h-full object-contain"
+                            alt="Category preview"
+                        >
+                    `;
+                } else {
+                    previewElement.innerHTML = '<p class="text-gray-500">Image preview will appear here</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching category:', error);
+                alert(`Error fetching category details: ${error.message}`);
+            }
+        }
+
+        async function updateCategory() {
+            const id = document.getElementById('editCategoryId').value;
+            const name = document.getElementById('editCategoryName').value.trim().toLowerCase();
+            const description = document.getElementById('editCategoryDescription').value;
+            const imageFile = document.getElementById('editCategoryImage').files[0];
+
+            // Validate name
+            if (!validateCategoryName(document.getElementById('editCategoryName'))) {
+                return;
+            }
+
+            try {
+                // Upload new image if selected
+                let image_url = null;
+                if (imageFile) {
+                    image_url = await uploadImage(imageFile);
+                }
+
+                const updateData = {
+                    name,
+                    description
+                };
+
+                // Only include image_url if a new image was uploaded
+                if (image_url) {
+                    updateData.image_url = image_url;
+                }
+
+                const response = await fetch(`${API_URL}/admin/categories/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to update category');
+                }
+
+                // Close modal and reload categories
+                closeEditModal();
+                await loadCategories();
+                alert('Category updated successfully');
+            } catch (error) {
+                console.error('Error updating category:', error);
+                alert(error.message);
+            }
+        }
+
+        async function deleteCategory(categoryId) {
+            if (!confirm('Are you sure you want to delete this category? All associated recipes will be affected.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/admin/categories/${categoryId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to delete category');
+                }
+
+                // Reload categories
+                await loadCategories();
+                await loadDashboardData();
+                alert('Category deleted successfully');
+            } catch (error) {
+                console.error('Error deleting category:', error);
+                alert(error.message);
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('adminToken');
+            authToken = null;
+            document.getElementById('dashboardContent').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+        }
+
+        // Add new user function
+        async function addNewUser() {
+            const username = document.getElementById('newUserUsername').value;
+            const email = document.getElementById('newUserEmail').value;
+            const password = document.getElementById('newUserPassword').value;
+            const userType = document.getElementById('newUserType').value;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ 
+                        username, 
+                        email, 
+                        password,
+                        user_type: userType
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to create user');
+                }
+
+                // Clear form
+                document.getElementById('newUserUsername').value = '';
+                document.getElementById('newUserEmail').value = '';
+                document.getElementById('newUserPassword').value = '';
+                document.getElementById('newUserType').value = 'default_user';
+
+                // Reload users and dashboard data
+                await loadUsers();
+                await loadDashboardData();
+                alert('User created successfully');
+            } catch (error) {
+                console.error('Error creating user:', error);
+                alert(error.message);
+            }
+        }
+
+        // Recipe Management Functions
+        async function loadRecipes() {
+            try {
+                const response = await fetch(`${API_URL}/admin/recipes`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to load recipes');
+                }
+
+                const recipes = await response.json();
+                
+                const recipesList = document.getElementById('recipesList');
+                recipesList.innerHTML = recipes.map(recipe => `
+                    <div class="border p-4 rounded-lg mb-4 bg-white">
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-24 h-24 bg-gray-200 rounded overflow-hidden">
+                                    <img 
+                                        src="${recipe.image_url || '/images/placeholder.jpg'}" 
+                                        alt="${recipe.title}"
+                                        class="w-full h-full object-cover"
+                                        onerror="this.src='/images/placeholder.jpg'"
+                                    >
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-lg">${recipe.title}</h3>
+                                    <p class="text-sm text-gray-600">${recipe.description}</p>
+                                    <div class="mt-2 text-sm">
+                                        <span class="text-blue-600">Category: ${recipe.category?.name || 'Uncategorized'}</span>
+                                        <span class="mx-2">|</span>
+                                        <span class="text-green-600">Prep Time: ${recipe.prep_time}</span>
+                                        <span class="mx-2">|</span>
+                                        <span class="text-purple-600">Difficulty: ${recipe.difficulty_level}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <button 
+                                    onclick="editRecipe(${recipe.id})"
+                                    class="block w-full bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors"
+                                >
+                                    Edit
+                                </button>
+                                <button 
+                                    onclick="deleteRecipe(${recipe.id})"
+                                    class="block w-full bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-colors"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Also update categories in the add recipe form
+                await loadCategoriesForRecipeForm();
+            } catch (error) {
+                console.error('Error loading recipes:', error);
+                document.getElementById('recipesList').innerHTML = `
+                    <div class="text-center text-red-500 p-4">
+                        Error loading recipes: ${error.message}
+                        <button 
+                            onclick="loadRecipes()" 
+                            class="block mx-auto mt-2 bg-blue-500 text-white px-4 py-2 rounded"
+                        >
+                            Try Again
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadCategoriesForRecipeForm() {
+            try {
+                const response = await fetch(`${API_URL}/admin/categories`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load categories');
+                }
+
+                const categories = await response.json();
+                
+                // Update both add and edit form category dropdowns
+                const categoryDropdowns = ['recipeCategory', 'editRecipeCategory'];
+                categoryDropdowns.forEach(dropdownId => {
+                    const dropdown = document.getElementById(dropdownId);
+                    dropdown.innerHTML = categories.map(category => 
+                        `<option value="${category.id}">${category.name}</option>`
+                    ).join('');
+                });
+            } catch (error) {
+                console.error('Error loading categories for recipe form:', error);
+            }
+        }
+
+        async function createRecipe() {
+            try {
+                const title = document.getElementById('recipeTitle').value.trim();
+                const category_id = document.getElementById('recipeCategory').value;
+                const description = document.getElementById('recipeDescription').value.trim();
+                const imageFile = document.getElementById('recipeImage').files[0];
+                const prep_time = document.getElementById('recipePrepTime').value.trim();
+                const servings = document.getElementById('recipeServings').value;
+                const difficulty_level = document.getElementById('recipeDifficulty').value;
+
+                if (!title || !description || !category_id) {
+                    alert('Please fill in all required fields (title, description, and category)');
+                    return;
+                }
+
+                // Upload image if selected
+                let image_url = null;
+                if (imageFile) {
+                    image_url = await uploadImage(imageFile);
+                }
+
+                const response = await fetch(`${API_URL}/admin/recipes`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title,
+                        category_id: parseInt(category_id),
+                        description,
+                        image_url,
+                        prep_time,
+                        servings: parseInt(servings),
+                        difficulty_level
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to create recipe');
+                }
+
+                // Clear form
+                document.getElementById('recipeTitle').value = '';
+                document.getElementById('recipeDescription').value = '';
+                document.getElementById('recipeImage').value = '';
+                document.getElementById('recipeImagePreview').innerHTML = '<p class="text-gray-500">Image preview will appear here</p>';
+                document.getElementById('recipePrepTime').value = '';
+                document.getElementById('recipeServings').value = '1';
+                document.getElementById('recipeDifficulty').value = 'Medium';
+
+                await loadRecipes();
+                await loadDashboardData();
+                alert('Recipe created successfully');
+            } catch (error) {
+                console.error('Error creating recipe:', error);
+                alert(error.message);
+            }
+        }
+
+        async function editRecipe(recipeId) {
+            try {
+                console.log('Fetching recipe details for ID:', recipeId);
+                
+                const response = await fetch(`${API_URL}/admin/recipes/${recipeId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch recipe details. Status: ${response.status}`);
+                }
+
+                const recipe = await response.json();
+                console.log('Fetched recipe:', recipe);
+
+                if (!recipe || !recipe.id) {
+                    throw new Error('Invalid recipe data received');
+                }
+
+                // Show edit modal and populate fields
+                document.getElementById('editRecipeModal').classList.remove('hidden');
+                document.getElementById('editRecipeId').value = recipe.id;
+                document.getElementById('editRecipeTitle').value = recipe.title || '';
+                document.getElementById('editRecipeDescription').value = recipe.description || '';
+                document.getElementById('editRecipePrepTime').value = recipe.prep_time || '';
+                document.getElementById('editRecipeServings').value = recipe.servings || 1;
+                document.getElementById('editRecipeDifficulty').value = recipe.difficulty_level || 'Medium';
+
+                // Set image preview if exists
+                const previewElement = document.getElementById('editRecipeImagePreview');
+                if (recipe.image_url) {
+                    previewElement.innerHTML = `
+                        <img 
+                            src="${recipe.image_url}" 
+                            class="w-full h-full object-contain"
+                            alt="Recipe preview"
+                        >
+                    `;
+                } else {
+                    previewElement.innerHTML = '<p class="text-gray-500">Image preview will appear here</p>';
+                }
+
+                // Load categories first, then set the selected category
+                await loadCategoriesForRecipeForm();
+                document.getElementById('editRecipeCategory').value = recipe.category?.id || '';
+
+            } catch (error) {
+                console.error('Error fetching recipe:', error);
+                alert(`Error fetching recipe details: ${error.message}`);
+            }
+        }
+
+        function closeEditRecipeModal() {
+            document.getElementById('editRecipeModal').classList.add('hidden');
+            // Clear form fields
+            document.getElementById('editRecipeId').value = '';
+            document.getElementById('editRecipeTitle').value = '';
+            document.getElementById('editRecipeDescription').value = '';
+            document.getElementById('editRecipeImage').value = '';
+            document.getElementById('editRecipePrepTime').value = '';
+            document.getElementById('editRecipeServings').value = '1';
+            document.getElementById('editRecipeDifficulty').value = 'Medium';
+        }
+
+        async function updateRecipe() {
+            try {
+                const id = document.getElementById('editRecipeId').value;
+                const title = document.getElementById('editRecipeTitle').value.trim();
+                const category_id = document.getElementById('editRecipeCategory').value;
+                const description = document.getElementById('editRecipeDescription').value.trim();
+                const imageFile = document.getElementById('editRecipeImage').files[0];
+                const prep_time = document.getElementById('editRecipePrepTime').value.trim();
+                const servings = document.getElementById('editRecipeServings').value;
+                const difficulty_level = document.getElementById('editRecipeDifficulty').value;
+
+                if (!title || !description || !category_id) {
+                    alert('Please fill in all required fields (title, description, and category)');
+                    return;
+                }
+
+                // Upload new image if selected
+                let image_url = null;
+                if (imageFile) {
+                    image_url = await uploadImage(imageFile);
+                }
+
+                const updateData = {
+                    title,
+                    category_id: parseInt(category_id),
+                    description,
+                    prep_time,
+                    servings: parseInt(servings),
+                    difficulty_level
+                };
+
+                // Only include image_url if a new image was uploaded
+                if (image_url) {
+                    updateData.image_url = image_url;
+                }
+
+                const response = await fetch(`${API_URL}/admin/recipes/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to update recipe');
+                }
+
+                const updatedRecipe = await response.json();
+                console.log('Recipe updated:', updatedRecipe);
+
+                closeEditRecipeModal();
+                await loadRecipes();
+                alert('Recipe updated successfully');
+            } catch (error) {
+                console.error('Error updating recipe:', error);
+                alert(`Error updating recipe: ${error.message}`);
+            }
+        }
+
+        async function deleteRecipe(recipeId) {
+            if (!confirm('Are you sure you want to delete this recipe? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/admin/recipes/${recipeId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to delete recipe');
+                }
+
+                await loadRecipes();
+                await loadDashboardData();
+                alert('Recipe deleted successfully');
+            } catch (error) {
+                console.error('Error deleting recipe:', error);
+                alert(error.message);
+            }
+        }
+
+        // Section Management
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Show selected section
+            document.getElementById(sectionName + 'Section').classList.remove('hidden');
+
+            // Update active link in navigation
+            document.querySelectorAll('nav a').forEach(link => {
+                if (link.getAttribute('href') === '#' + sectionName) {
+                    link.classList.add('text-blue-300');
+                } else {
+                    link.classList.remove('text-blue-300');
+                }
+            });
+
+            // Load section data if needed
+            switch(sectionName) {
+                case 'dashboard':
+                    loadDashboardData();
+                    break;
+                case 'users':
+                    loadUsers();
+                    break;
+                case 'recipes':
+                    loadRecipes();
+                    loadCategoriesForRecipeForm();
+                    break;
+                case 'categories':
+                    loadCategories();
+                    break;
+            }
+        }
+
+        // Image handling functions
+        function handleImageUpload(input, previewId) {
+            const previewElement = document.getElementById(previewId);
+            const file = input.files[0];
+
+            if (!file) {
+                previewElement.innerHTML = '<p class="text-gray-500">Image preview will appear here</p>';
+                return;
+            }
+
+            console.log('Selected file:', file); // Log file details
+
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                console.log('Image loaded successfully'); // Log successful image load
+                previewElement.innerHTML = `
+                    <img 
+                        src="${e.target.result}" 
+                        class="w-full h-full object-contain"
+                        alt="Recipe preview"
+                    >
+                `;
+            };
+            reader.onerror = function(e) {
+                console.error('Error reading file:', e); // Log file reading errors
+                previewElement.innerHTML = '<p class="text-red-500">Error loading image preview</p>';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function uploadImage(file) {
+            if (!file) return null;
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                console.log('Uploading image...', file.name);
+                console.log('Auth token:', authToken); // This will help debug authentication issues
+
+                const response = await fetch(`${API_URL}/admin/recipes/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: formData
+                });
+
+                console.log('Upload response status:', response.status);
+                const responseText = await response.text();
+                console.log('Upload response:', responseText);
+
+                if (!response.ok) {
+                    let errorMessage;
+                    try {
+                        const errorData = JSON.parse(responseText);
+                        errorMessage = errorData.error;
+                    } catch (e) {
+                        errorMessage = responseText;
+                    }
+                    throw new Error(`Failed to upload image: ${errorMessage}`);
+                }
+
+                const data = JSON.parse(responseText);
+                console.log('Upload successful:', data);
+                return data.imageUrl;
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                alert(`Error uploading image: ${error.message}`);
+                throw error;
+            }
+        }
+    </script>
+</body>
+</html> 
+</html> 
